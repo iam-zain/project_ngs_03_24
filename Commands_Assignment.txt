@@ -1,0 +1,101 @@
+	1  sudo apt-get update
+    2  sudo apt-get install bcftools
+    3  docker pull broadinstitute/gatk
+    4  docker images
+    5  docker run -it  -v $PWD:/data/ broadinstitute/gatk:latest
+    6  wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr15.fa.gz
+    7  gunzip chr15.fa.gz
+    8  wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-ubuntu64.tar.gz
+    9  tar -xzvf sratoolkit.current-ubuntu64.tar.gz
+   10  mv sratoolkit.3.1.0-ubuntu64 sra_toolkit
+   11  cd sra_toolkit/bin
+   12  ./vdb-config -i #set permission and default folders, go to TOOLS > set to current directory
+   13  cd ..
+   14  sra_toolkit/bin/fastq-dump --split-files --gzip  ERR11468775 -X 1000000
+   15  sra_toolkit/bin/fastq-dump --split-files --gzip  ERR11468776 -X 1000000
+   16  sra_toolkit/bin/fastq-dump --split-files --gzip  ERR11468777 -X 1000000
+   17  gunzip ERR11468777_1.fastq.gz
+   18  head -n 4 ERR11468777_1.fastq
+   19  sudo apt-get -y install --fix-missing
+   20  sudo apt-get update
+   21  sudo apt --fix-broken install
+   22  fastqc --help
+   23  sudo apt install fastqc
+   24  fastqc ERR11468775_*
+   25  fastqc ERR11468776_*
+   26  fastqc ERR11468777_*
+   27  wget http://opengene.org/fastp/fastp
+   28  chmod a+x fastp
+   29  ./fastp -i ERR11468775_1.fastq.gz -o ERR11468775_trimmed_1.fastq.gz -I ERR11468775_2.fastq.gz -O ERR11468775_trimmed_2.fastq.gz --detect_adapter_for_pe -f 10 -g -l 50 -c -h ERR11468775_fastp.html -w 10
+   30  ./fastp -i ERR11468776_1.fastq.gz -o ERR11468776_trimmed_1.fastq.gz -I ERR11468776_2.fastq.gz -O ERR11468776_trimmed_2.fastq.gz --detect_adapter_for_pe -f 10 -g -l 50 -c -h ERR11468776_fastp.html -w 10
+   31  ./fastp -i ERR11468777_1.fastq.gz -o ERR11468777_trimmed_1.fastq.gz -I ERR11468777_2.fastq.gz -O ERR11468777_trimmed_2.fastq.gz --detect_adapter_for_pe -f 10 -g -l 50 -c -h ERR11468777_fastp.html -w 10
+   32  zip ERR11468777_1.fastq
+   33  sra_toolkit/bin/fastq-dump --split-files --gzip  ERR11468777 -X 1000000
+   34  ./fastp -i ERR11468777_1.fastq.gz -o ERR11468777_trimmed_1.fastq.gz -I ERR11468777_2.fastq.gz -O ERR11468777_trimmed_2.fastq.gz --detect_adapter_for_pe -f 10 -g -l 50 -c -h ERR11468777_fastp.html -w 10
+   35  git clone https://github.com/lh3/bwa.git
+   36  cd bwa
+   37  make
+   38  bwa index -a bwtsw -p chr15_ref ../ref_genome/chr15.fa
+   39  bwa index -a bwtsw -p chr15_ref ../chr15.fa
+   40  bwa index -a bwtsw -p ../chr15_ref ../chr15.fa
+   41  cd/
+   42  cd
+   43  ls
+   44  cd /workspace/project_ngs_03_24/
+   45  ls
+   46  cd bwa
+   47  bwa index -a bwtsw -p ../chr15_ref ../chr15.fa
+   48  bwa index -a bwtsw -p ../chr15_ref ../chr15.fa 
+   49  cd ..
+   50  mkdir ref_genome
+   51  mv chr15.fa /ref_genome
+   52  mv chr15.fa /ref_genome/
+   53  mv chr15.fa ../ref_genome/
+   54  mv chr15.fa '/ref_genome/'
+   55  mv chr15.fa ../ref_genome/chr15.fa
+   56  mv chr15.fa ref_genome/chr15.fa
+   57  cd bwa
+   58  make
+   59  bwa index -a bwtsw -p chr15_ref ../ref_genome/chr15.fa
+   60  bwa index -a bwtsw -p chr15_ref ../ref_genome/chr15.fa 
+   61  cd ..
+   62  mkdir
+   63  mkdir files
+   64  mv /path/to/ngs/* /path/to/ngs/new/
+   65  mv /* /files
+   66  clear
+   67  cd bwa
+   68  bwa index -a bwtsw -p chr15_ref ../files/ref_genome/chr15.fa
+   69  cd ..
+   70  git clone https://github.com/lh3/bwa.git
+   71  rm - rf bwa
+   72  rm -rf bwa
+   73  git clone https://github.com/lh3/bwa.git
+   74  cd bwa
+   75  make
+   76  bwa index -a bwtsw -p chr15_ref ../files/ref_genome/chr15.fa
+   77  cd ..
+   78  sudo apt-get install bwa
+   79  cd bwa
+   80  bwa index -a bwtsw -p chr15_ref ../files/ref_genome/chr15.fa
+   81  bwa mem chr15_ref ../files/ERR11468775_trimmed_1.fastq.gz ../files/ERR11468775_trimmed_2.fastq.gz -t 10 -o sample1.sam
+   82  bwa mem chr15_ref ../files/ERR11468776_trimmed_1.fastq.gz ../files/ERR11468776_trimmed_2.fastq.gz -t 10 -o sample2.sam
+   83  bwa mem chr15_ref ../files/ERR11468777_trimmed_1.fastq.gz ../files/ERR11468777_trimmed_2.fastq.gz -t 10 -o sample3.sam
+   84  cd ..
+   85  sudo apt-get -y install samtools
+   86  cd files
+   87  sudo apt-get -y install samtools
+   88  samtools view -bo sample1.bam sample1.sam
+   89  samtools view -bo sample2.bam sample2.sam
+   90  samtools view -bo sample3.bam sample3.sam
+   91  docker run -it -v $PWD:/data broadinstitute/gatk:latest
+   92  wget https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf
+   93  wget https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx
+   94  docker run -it -v $PWD:/data broadinstitute/gatk:latest
+   95  wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr15.fa.gz
+   96  gunzip chr15.fa.gz 
+   97  docker run -it -v $PWD:/data broadinstitute/gatk:latest
+   98  cd /files
+   99  cd ./files
+  100  docker run -it -v $PWD:/data broadinstitute/gatk:latest
+  101  history

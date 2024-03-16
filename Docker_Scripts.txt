@@ -1,0 +1,56 @@
+	1  ls
+    2  cd /data/
+    3  ls
+    4  gatk CreateSequenceDictionary -R chr15.fa
+    5  rm -rf chr15.dict 
+    6  gatk CreateSequenceDictionary -R chr15.fa
+    7  samtools faidx chr15.fa
+    8  gatk ApplyBQSR -R chr6.fa -I sample1_markedDups.bam --bqsr-recal-file ../sample1_recal_data.table -O sample1_recal.bam
+    9  gatk ApplyBQSR -R chr15.fa -I sample1_markedDups.bam --bqsr-recal-file ../sample1_recal_data.table -O sample1_recal.bam
+   10  gatk BaseRecalibrator -I sample1_markedDups.bam -R chr15.fa --known-sites Homo_sapiens_assembly38.dbsnp138.vcf -O sample1_recal_data.table
+   11  gatk BaseRecalibrator -I sample2_markedDups.bam -R chr15.fa --known-sites Homo_sapiens_assembly38.dbsnp138.vcf -O sample2_recal_data.table
+   12  gatk BaseRecalibrator -I sample3_markedDups.bam -R chr15.fa --known-sites Homo_sapiens_assembly38.dbsnp138.vcf -O sample3_recal_data.table
+   13  samtools index s_recal.bam
+   14  samtools index sample1_recal.bam
+   15  samtools index sample2_recal.bam
+   16  gatk BaseRecalibrator -I sample2_markedDups.bam -R chr15.fa --known-sites Homo_sapiens_assembly38.dbsnp138.vcf -O sample2_recal_data.table
+   17  gatk BaseRecalibrator -I sample2_markedDups.bam -R chr15.fa --known-sites Homo_sapiens_assembly38.dbsnp138.vcf -O sample2_recal_data.table -O sample2_recal.bam
+   18  gatk ApplyBQSR -R chr6.fa -I sample2_markedDups.bam --bqsr-recal-file ../sample2_recal_data.table -O sample2_recal.bam
+   19  gatk ApplyBQSR -R chr15.fa -I sample2_markedDups.bam --bqsr-recal-file ../sample2_recal_data.table -O sample2_recal.bam
+   20  gatk ApplyBQSR -R chr15.fa -I sample2_markedDups.bam --bqsr-recal-file sample2_recal_data.table -O sample2_recal.bam
+   21  gatk ApplyBQSR -R chr15.fa -I sample3_markedDups.bam --bqsr-recal-file sample3_recal_data.table -O sample3_recal.bam
+   22  samtools index sample1_recal.bam
+   23  samtools index sample2_recal.bam
+   24  samtools index sample3_recal.bam
+   25  ls
+   26  gatk Mutect2 -I sample1_recal.bam -R chr15.fa -O sample1.vcf.gz
+   27  gatk Mutect2 -I sample2_recal.bam -R chr15.fa -O sample2.vcf.gz
+   28  gatk Mutect2 -I sample3_recal.bam -R chr15.fa -O sample3.vcf.gz
+   29  gatk ApplyBQSR -R chr15.fa -I sample1_markedDups.bam --bqsr-recal-file sample1_recal_data.table -O sample1_recal.bam
+   30  gatk ApplyBQSR -R chr15.fa -I sample1_markedDups.bam --bqsr-recal-file sample1_recal_data.table -O sample1_recal.bam
+   31  samtools index sample1_recal.bam
+   32  gatk Mutect2 -I sample1_recal.bam -R chr15.fa -O sample1.vcf.gz
+   33  gatk FilterMutectCalls -R chr15.fa -V sample1.vcf.gz -O filtered_sample1.vcf.gz
+   34  gatk FilterMutectCalls -R chr15.fa -V sample2.vcf.gz -O filtered_sample2.vcf.gz
+   35  gatk FilterMutectCalls -R chr15.fa -V sample3.vcf.gz -O filtered_sample3.vcf.gz
+   36  bcftools view --types indels sample1.vcf.gz >> sample1_indels.vcf
+   37  bcftools view --types indels sample2.vcf.gz >> sample2_indels.vcf
+   38  bcftools view --types indels sample3.vcf.gz >> sample3_indels.vcf
+   39  bcftools view --types snps sample1.vcf.gz >> sample1_snps.vcf
+   40  bcftools view --types snps sample2.vcf.gz >> sample2_snps.vcf
+   41  bcftools view --types snps sample3.vcf.gz >> sample3_snps.vcf
+   42  bcftools filter -i '%QUAL>50' sample1.vcf.gz
+   43  bcftools filter -i '%QUAL>50' sample2.vcf.gz
+   44  bcftools filter -i '%QUAL>50' sample3.vcf.gz
+   45  clear
+   46  ls
+   47  wget https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/hapmap_3.3.hg38.vcf.gz
+   48  wget https://storage.googleapis.com/genomics-public-data/resources/broad/hg38/v0/hapmap_3.3.hg38.vcf.gz.tbi
+   49  gatk HaplotypeCaller -R chr15.fa -I sample1_recal.bam -O sample1_germline.g.vcf.gz -ERC GVCF
+   50  gatk HaplotypeCaller -R chr15.fa -I sample2_recal.bam -O sample2_germline.g.vcf.gz -ERC GVCF
+   51  gatk HaplotypeCaller -R chr15.fa -I sample3_recal.bam -O sample3_germline.g.vcf.gz -ERC GVCF
+   52  gatk GenomicsDBImport -V sample1_germline.g.vcf.gz -V sample2_germline.g.vcf.gz -V sample3_germline.g.vcf.gz --genomicsdb-workspace-path test_db --intervals chr15
+   53  ls
+   54  gatk GenotypeGVCFs -R chr15.fa -V gendb://test_db -O chr15_new.vcf.gz
+   55  bcftools view --types snps chr15_new.vcf.gz
+   56  history
